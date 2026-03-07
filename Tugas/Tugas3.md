@@ -1,8 +1,8 @@
+Product
+![alt text](image-9.png)
+Category
+![alt text](image-10.png)
+User
+![alt text](image-11.png)
 ERD
-![alt text](image-4.png)
-database
-![alt text](image-8.png)
-model
-![alt text](image-6.png)
-migration
-![alt text](image-7.png)
+![alt text](image-12.png)
