@@ -22,20 +22,19 @@ Route::middleware('auth')->group(function () {
     // About Route
     Route::get('/about', [AboutController::class, 'index'])->name('about');
 
-    // Product Routes
+    // --- Product Routes ---
     Route::get('/product', [ProductController::class, 'index'])->name('product.index');
-    
-    // Route Export (Khusus Admin via Gate)
-    Route::get('/product/export', [ProductController::class, 'export'])
-        ->name('product.export')
-        ->middleware('can:export-product');
-
     Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
     Route::post('/product', [ProductController::class, 'store'])->name('product.store');
     Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
     Route::get('/product/edit/{product}', [ProductController::class, 'edit'])->name('product.edit');
     Route::put('/product/update/{id}', [ProductController::class, 'update'])->name('product.update');
     Route::delete('/product/delete/{id}', [ProductController::class, 'delete'])->name('product.delete');
+
+    // Route Export (Hanya satu kali, diletakkan di bawah agar rapi)
+    Route::get('/product/export', [ProductController::class, 'export'])
+        ->name('product.export')
+        ->middleware('can:export-product');
 });
 
 require __DIR__.'/auth.php';

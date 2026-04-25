@@ -77,6 +77,7 @@
                         </div>
 
                         {{-- User --}}
+                        @if(auth()->user()->role === 'admin')
                         <div>
                             <label for="user_id"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -99,6 +100,9 @@
                                 <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
+                        @else
+                            <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                        @endif
 
                         {{-- Actions --}}
                         <div class="flex items-center justify-end gap-3 pt-2">

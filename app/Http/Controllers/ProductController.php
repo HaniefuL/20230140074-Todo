@@ -13,18 +13,51 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = Product::all();
-        return view('product.index', compact('products'));
+        $products = Product::all(); // Mengambil semua data
+        return view('product.index', compact('products')); // Mengirim variabel $products
     }
 
     /**
      * Method untuk Export (Sesuai tugas Kelas B)
      */
     public function export()
-    {
-        // Pastikan login sebagai admin baru bisa tembus sini karena middleware Gate
-        return "Halaman Export Produk (Hanya Admin)";
+{
+    // Pastikan hanya admin yang bisa akses lewat URL langsung
+    if (auth()->user()->role !== 'admin') {
+        abort(403);
     }
+
+    $products = \App\Models\Product::with('user')->get();
+
+    $fileName = 'products_report_' . now()->format('Y-m-d') . '.csv';
+    $headers = [
+        "Content-type"        => "text/csv",
+        "Content-Disposition" => "attachment; filename=$fileName",
+        "Pragma"              => "no-cache",
+        "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+        "Expires"             => "0"
+    ];
+
+    $columns = ['ID', 'Product Name', 'Quantity', 'Price', 'Owner'];
+
+    $callback = function() use($products, $columns) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, $columns);
+
+        foreach ($products as $product) {
+            fputcsv($file, [
+                $product->id,
+                $product->name,
+                $product->quantity,
+                $product->price,
+                $product->user->name,
+            ]);
+        }
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
 
     public function create()
     {
@@ -38,8 +71,12 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'quantity' => 'required|integer',
             'price' => 'required|numeric',
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'sometimes|exists:users,id',
         ]);
+
+        if (auth()->user()->role !== 'admin') {
+            $validated['user_id'] = auth()->id();
+        }
 
         Product::create($validated);
 
@@ -74,6 +111,10 @@ class ProductController extends Controller
             'price' => 'sometimes|numeric',
             'user_id' => 'sometimes|exists:users,id',
         ]);
+
+        if (auth()->user()->role !== 'admin') {
+        $validated['user_id'] = $product->user_id;
+    }
 
         $product->update($validated);
 
