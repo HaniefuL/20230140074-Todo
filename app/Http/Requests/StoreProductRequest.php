@@ -25,6 +25,7 @@ class StoreProductRequest extends FormRequest
             'name' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
+            'category_id' => 'nullable|exists:category,id',
             'user_id' => 'sometimes|exists:users,id',
         ];
     }
@@ -48,6 +49,8 @@ class StoreProductRequest extends FormRequest
             'price.required' => 'Harga produk wajib diisi.',
             'price.numeric' => 'Harga produk harus berupa angka yang valid.',
             'price.min' => 'Harga produk tidak boleh bernilai negatif.',
+
+            'category_id.exists' => 'Kategori produk tidak ditemukan di sistem.',
 
             'user_id.exists' => 'Pemilik produk tidak ditemukan di sistem.',
         ];

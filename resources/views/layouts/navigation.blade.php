@@ -23,6 +23,12 @@
                     <x-nav-link :href="route('product.index')" :active="request()->routeIs('product.*')" class="text-gray-300 hover:text-white text-sm font-medium border-b-2 border-transparent hover:border-gray-300 pb-1" activeClass="text-white border-white">
                         {{ __('Product') }}
                     </x-nav-link>
+
+                    @can('view-category')
+                    <x-nav-link :href="route('category.index')" :active="request()->routeIs('category.*')" class="text-gray-300 hover:text-white text-sm font-medium border-b-2 border-transparent hover:border-gray-300 pb-1" activeClass="text-white border-white">
+                        {{ __('Category') }}
+                    </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -88,6 +94,12 @@
             <x-responsive-nav-link :href="route('product.index')" :active="request()->routeIs('product.*')" class="text-gray-300 hover:text-white hover:bg-gray-700">
                 {{ __('Product') }}
             </x-responsive-nav-link>
+
+            @can('view-category')
+            <x-responsive-nav-link :href="route('category.index')" :active="request()->routeIs('category.*')" class="text-gray-300 hover:text-white hover:bg-gray-700">
+                {{ __('Category') }}
+            </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\User;
+use App\Models\Category;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -22,48 +23,49 @@ class ProductController extends Controller
      * Method untuk Export (Sesuai tugas Kelas B)
      */
     public function export()
-{
-    // Pastikan hanya admin yang bisa akses lewat URL langsung
-    if (auth()->user()->role !== 'admin') {
-        abort(403);
-    }
-
-    $products = \App\Models\Product::with('user')->get();
-
-    $fileName = 'products_report_' . now()->format('Y-m-d') . '.csv';
-    $headers = [
-        "Content-type"        => "text/csv",
-        "Content-Disposition" => "attachment; filename=$fileName",
-        "Pragma"              => "no-cache",
-        "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-        "Expires"             => "0"
-    ];
-
-    $columns = ['ID', 'Product Name', 'Quantity', 'Price', 'Owner'];
-
-    $callback = function() use($products, $columns) {
-        $file = fopen('php://output', 'w');
-        fputcsv($file, $columns);
-
-        foreach ($products as $product) {
-            fputcsv($file, [
-                $product->id,
-                $product->name,
-                $product->quantity,
-                $product->price,
-                $product->user->name,
-            ]);
+    {
+        // Pastikan hanya admin yang bisa akses lewat URL langsung
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
         }
-        fclose($file);
-    };
 
-    return response()->stream($callback, 200, $headers);
-}
+        $products = \App\Models\Product::with('user')->get();
+
+        $fileName = 'products_report_' . now()->format('Y-m-d') . '.csv';
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID', 'Product Name', 'Quantity', 'Price', 'Owner'];
+
+        $callback = function() use($products, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($products as $product) {
+                fputcsv($file, [
+                    $product->id,
+                    $product->name,
+                    $product->quantity,
+                    $product->price,
+                    $product->user->name,
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 
     public function create()
     {
-        $users = User::orderBy('name')->get();
-        return view('product.create', compact('users'));
+        $users = \App\Models\User::all();
+        $categories = Category::all();
+        return view('product.create', compact('categories', 'users'));
     }
 
     public function store(StoreProductRequest $request)
@@ -91,7 +93,8 @@ class ProductController extends Controller
         $this->authorize('update', $product);
 
         $users = User::orderBy('name')->get();
-        return view('product.edit', compact('product', 'users'));
+        $categories = Category::orderBy('name')->get();
+        return view('product.edit', compact('product', 'users', 'categories'));
     }
 
     public function update(UpdateProductRequest $request, $id)

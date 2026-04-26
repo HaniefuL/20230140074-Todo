@@ -25,6 +25,7 @@ class UpdateProductRequest extends FormRequest
             'name' => 'sometimes|string|max:255',
             'quantity' => 'sometimes|integer|min:1',
             'price' => 'sometimes|numeric|min:0',
+            'category_id' => 'nullable|exists:category,id',
             'user_id' => 'sometimes|exists:users,id',
         ];
     }
@@ -45,6 +46,8 @@ class UpdateProductRequest extends FormRequest
 
             'price.numeric' => 'Harga produk harus berupa angka yang valid.',
             'price.min' => 'Harga produk tidak boleh bernilai negatif.',
+
+            'category_id.exists' => 'Kategori produk tidak ditemukan di sistem.',
 
             'user_id.exists' => 'Pemilik produk tidak ditemukan di sistem.',
         ];

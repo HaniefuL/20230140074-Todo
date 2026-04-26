@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,6 +36,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/product/export', [ProductController::class, 'export'])
         ->name('product.export')
         ->middleware('can:export-product');
+
+    // --- Category Routes ---
+    Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
+    Route::get('/category/create', [CategoryController::class, 'create'])->name('category.create');
+    Route::post('/category', [CategoryController::class, 'store'])->name('category.store');
+    Route::get('/category/edit/{category}', [CategoryController::class, 'edit'])->name('category.edit');
+    Route::put('/category/update/{category}', [CategoryController::class, 'update'])->name('category.update');
+    Route::delete('/category/delete/{category}', [CategoryController::class, 'destroy'])->name('category.delete');
 });
 
 require __DIR__.'/auth.php';
